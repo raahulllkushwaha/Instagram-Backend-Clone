@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: instaclone_postgres
+    environment:
+      POSTGRES_DB: instacloneDB
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: rahul5264
+    ports:
+      - "5435:5432"
+    volumes:
+      - instaclone_data:/var/lib/postgresql/data
+
+volumes:
+  instaclone_data:
