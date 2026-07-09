@@ -1,5 +1,6 @@
 package com.rahul.instagram.common;
 
+import com.rahul.instagram.common.exceptions.InvalidCredentialsException;
 import com.rahul.instagram.common.exceptions.ResourceNotFoundException;
 import com.rahul.instagram.common.exceptions.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
@@ -17,9 +18,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(Map.of("error", ex.getMessage()));
     }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handleNotFound(ResourceNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<?> handleInvalid(InvalidCredentialsException ex){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", ex.getMessage()));
     }
 
