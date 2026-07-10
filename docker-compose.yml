@@ -11,5 +11,16 @@ services:
     volumes:
       - instaclone_data:/var/lib/postgresql/data
 
+  neo4j:
+    image: neo4j:5
+    container_name: instaclone_neo4j
+    environment:
+      NEO4J_AUTH: neo4j/anonymous9039
+    ports:
+      - "7474:7474"   # browser UI
+      - "7687:7687"   # bolt protocol
+    volumes:
+      - neo4j_data:/data
 volumes:
   instaclone_data:
+  neo4j_data:
