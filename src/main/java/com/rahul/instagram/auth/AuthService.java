@@ -44,7 +44,7 @@ public class AuthService {
 
         String token = jwtUtil.generateToken(savedUser.getUsername());
 
-        UserResponse userResponse = userMapper.toUserResponse(savedUser);
+        UserResponse userResponse = userMapper.toUserResponse(savedUser, 0, 0);
 
         return AuthResponse.builder()
                 .token(token)
@@ -65,7 +65,7 @@ public class AuthService {
 
         String token = jwtUtil.generateToken(user.getUsername());
 
-        UserResponse userResponse = userMapper.toUserResponse(user);
+        UserResponse userResponse = userMapper.toUserResponse(user, 0, 0);
 
         return AuthResponse.builder()
                 .token(token)
