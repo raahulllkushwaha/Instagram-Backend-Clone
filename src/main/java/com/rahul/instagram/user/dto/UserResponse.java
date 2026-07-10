@@ -14,4 +14,8 @@ public class UserResponse {
     private String bio;
     private String profilePicUrl;
     private LocalDateTime createdAt;
+
+    // new entities
+    private Integer followersCount;
+    private Integer followingCount;
 }
