@@ -26,11 +26,11 @@ public class AuthService {
 
     public AuthResponse signUp(SignupRequest request){
         if(userRepository.existsByUsername(request.getUsername())){
-            throw new UserAlreadyExistsException("...");
+            throw new UserAlreadyExistsException("The user is already exist");
         }
 
         if(userRepository.existsByEmail(request.getEmail())){
-            throw new UserAlreadyExistsException("...");
+            throw new UserAlreadyExistsException("Email is already exist");
         }
 
         User user = User.builder()
