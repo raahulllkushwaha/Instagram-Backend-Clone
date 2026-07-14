@@ -29,6 +29,7 @@ public class PostService {
         Post post = Post.builder()
                 .caption(request.getCaption())
                 .mediaUrl(request.getMediaUrl())
+                .mediaPublicId(request.getMediaPublicId())
                 .user(user)
                 .build();
 

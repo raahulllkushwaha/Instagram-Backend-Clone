@@ -14,6 +14,7 @@ public class PostMapper {
                 .createdAt(post.getCreatedAt())
                 .username(post.getUser().getUsername())
                 .userProfilePicUrl(post.getUser().getProfilePicUrl())
+
                 .build();
     }
 }

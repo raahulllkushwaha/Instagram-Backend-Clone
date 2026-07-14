@@ -1,6 +1,7 @@
 package com.rahul.instagram.post;
 
 import com.rahul.instagram.common.ApiResponse;
+import com.rahul.instagram.media.MediaService;
 import com.rahul.instagram.post.dto.CreatePostRequest;
 import com.rahul.instagram.post.dto.PostResponse;
 import com.rahul.instagram.user.dto.UserResponse;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -19,13 +21,26 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
+    private final MediaService mediaService;
 
     private String getCurrentUsername() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
-    @PostMapping
-    public ResponseEntity<ApiResponse<PostResponse>> createPost(@Valid @RequestBody CreatePostRequest request){
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<ApiResponse<PostResponse>> createPost(
+            @RequestParam("caption") String caption,
+            @RequestParam("file") MultipartFile file
+    ){
+        //step 1 upload file to cloudinary
+        MediaService.UploadResult uploadResult = mediaService.uploadFile(file);
+
+        //step2 generate CreatePostRequest object
+        CreatePostRequest request = new CreatePostRequest();
+        request.setCaption(caption);
+        request.setMediaUrl(uploadResult.url());
+        request.setMediaPublicId(uploadResult.publicId());
+
 
         PostResponse postResponse = postService.createPost(getCurrentUsername(), request);
 

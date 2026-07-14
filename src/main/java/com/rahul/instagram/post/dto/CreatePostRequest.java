@@ -13,4 +13,6 @@ public class CreatePostRequest {
     private String caption;
 
     private String mediaUrl;
+
+    private String mediaPublicId;   // To delete Cloudinary data
 }

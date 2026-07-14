@@ -16,4 +16,6 @@ public class PostResponse {
     // to show some of owner data
     private String username;
     private String userProfilePicUrl;
+
+    // To delete Cloudinary data
 }
