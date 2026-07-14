@@ -33,6 +33,8 @@ public class Post {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
+    private String mediaPublicId;   // To delete Cloudinary data
+
     @PrePersist
     protected void onCreate(){
         createdAt = LocalDateTime.now();
