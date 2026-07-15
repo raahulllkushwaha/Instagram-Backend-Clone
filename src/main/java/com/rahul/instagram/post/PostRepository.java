@@ -1,6 +1,8 @@
 package com.rahul.instagram.post;
 
 import com.rahul.instagram.user.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -8,4 +10,12 @@ import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
    List<Post> findByUserOrderByCreatedAtDesc(User user);
+
+   Page<Post> findByUser_IdInOrderByCreatedAtDesc(List<Long> userIds, Pageable pageable);
+
+
+//   Page<Post> findByUser_IdInOrderByCreatedAtDesc(
+//           List<Long> userIds,
+//           Pageable pageable
+//   );
 }
