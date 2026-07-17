@@ -34,7 +34,7 @@ public class LikeService {
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with this post ID: " + postId));
 
         if(likeRepository.existsByPostAndUser(post, user)){
-            throw new RuntimeException("User: " + user + "already like this " + post);
+            throw new RuntimeException("You have already liked this post");
         }
 
         Like like = Like.builder()
@@ -50,7 +50,7 @@ public class LikeService {
                     post.getUser().getId(), // recipientId - owner of the post
                     user.getUsername(), //sendUsername - whom who like the post
                     NotificationType.LIKE,
-                    user.getUsername() + "liked your post"
+                    user.getUsername() + " liked your post"
             );
             notificationProducer.sendNotification(event);
         }

@@ -1,6 +1,9 @@
 package com.rahul.instagram.follow;
 
 import com.rahul.instagram.common.exceptions.ResourceNotFoundException;
+import com.rahul.instagram.notification.NotificationEvent;
+import com.rahul.instagram.notification.NotificationProducer;
+import com.rahul.instagram.notification.NotificationType;
 import com.rahul.instagram.user.User;
 import com.rahul.instagram.user.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +18,9 @@ public class FollowService {
 
     private final UserNodeRepository userNodeRepository;
     private final UserRepository userRepository;
+
+    // new for kafka notification
+    private final NotificationProducer notificationProducer;
 
     @Transactional(transactionManager = "neo4jTransactionManager")
     public void followUser(Long currentUserId, Long targetUserId){
@@ -46,6 +52,15 @@ public class FollowService {
                 ));
 
         userNodeRepository.followUser(currentUserId, targetUserId);
+
+        NotificationEvent event = new NotificationEvent(
+                targetUserId,
+                currentUser.getUsername(),
+                NotificationType.FOLLOW,
+                currentUser.getUsername() + " started following you"
+            );
+            notificationProducer.sendNotification(event);
+
     }
 
     @Transactional(transactionManager = "neo4jTransactionManager")

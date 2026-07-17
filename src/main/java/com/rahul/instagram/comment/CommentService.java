@@ -3,6 +3,9 @@ package com.rahul.instagram.comment;
 import com.rahul.instagram.comment.dto.CommentResponse;
 import com.rahul.instagram.comment.dto.CreateCommentRequest;
 import com.rahul.instagram.common.exceptions.ResourceNotFoundException;
+import com.rahul.instagram.notification.NotificationEvent;
+import com.rahul.instagram.notification.NotificationProducer;
+import com.rahul.instagram.notification.NotificationType;
 import com.rahul.instagram.post.Post;
 import com.rahul.instagram.post.PostRepository;
 import com.rahul.instagram.user.User;
@@ -23,6 +26,9 @@ public class CommentService {
 
     private final CommentMapper commentMapper;
 
+    //new for kafka
+    private final NotificationProducer notificationProducer;
+
 
     @Transactional(transactionManager = "transactionManager")
     public CommentResponse addComment(String currentUsername, Long postId, CreateCommentRequest request){
@@ -42,6 +48,17 @@ public class CommentService {
                 .build();
 
         Comment savedComment = commentRepository.save(comment);
+
+        if (!post.getUser().getId().equals(user.getId())) {
+            NotificationEvent event = new NotificationEvent(
+                    post.getUser().getId(),
+                    user.getUsername(),
+                    NotificationType.COMMENT,
+                    user.getUsername() + " commented on your post"
+            );
+            notificationProducer.sendNotification(event);
+        }
+
         return commentMapper.toCommentResponse(savedComment);
     }
 
