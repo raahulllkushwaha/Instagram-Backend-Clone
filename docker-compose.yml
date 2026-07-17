@@ -17,10 +17,33 @@ services:
     environment:
       NEO4J_AUTH: neo4j/anonymous9039
     ports:
-      - "7474:7474"   # browser UI
-      - "7687:7687"   # bolt protocol
+      - "7474:7474"
+      - "7687:7687"
     volumes:
       - neo4j_data:/data
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    container_name: instaclone_zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2182
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2182:2182"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    container_name: instaclone_kafka
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2182
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    ports:
+      - "9093:9093"
+
 volumes:
   instaclone_data:
   neo4j_data:
