@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Instaclone Chat Test v2</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 30px auto; }
+        input, button, textarea { font-size: 14px; padding: 6px; margin: 4px 0; width: 100%; box-sizing: border-box; }
+        #log { background: #111; color: #0f0; padding: 10px; height: 300px; overflow-y: auto; white-space: pre-wrap; font-family: monospace; font-size: 12px; }
+        button { cursor: pointer; }
+    </style>
+</head>
+<body>
+<h2>Instaclone Chat Test v2</h2>
+
+<label>Backend base URL</label>
+<input id="baseUrl" value="http://localhost:8081">
+
+<label>JWT Token (raw, no "Bearer" prefix)</label>
+<input id="token" placeholder="paste your login token here">
+
+<button id="connectBtn">Connect</button>
+<span id="status">Disconnected</span>
+
+<hr>
+
+<label>Receiver User ID</label>
+<input id="receiverId" value="2">
+
+<label>Message content</label>
+<input id="content" value="Hello from test page!">
+
+<button id="sendBtn" disabled>Send Message</button>
+
+<hr>
+<h3>Log</h3>
+<div id="log"></div>
+
+<script>
+    let stompClient = null;
+
+    function log(msg) {
+        const el = document.getElementById('log');
+        el.textContent += msg + "\n";
+        el.scrollTop = el.scrollHeight;
+    }
+
+    document.getElementById('connectBtn').onclick = function() {
+        const baseUrl = document.getElementById('baseUrl').value;
+        const token = document.getElementById('token').value;
+
+        const wsUrl = baseUrl + '/ws?token=' + encodeURIComponent(token);
+        log('Connecting to: ' + wsUrl);
+
+        const socket = new SockJS(wsUrl);
+        stompClient = Stomp.over(socket);
+        stompClient.debug = function(str) { log('[stomp] ' + str); };
+
+        stompClient.connect({}, function(frame) {
+            document.getElementById('status').textContent = 'Connected';
+            document.getElementById('sendBtn').disabled = false;
+            log('Connected: ' + frame);
+
+            stompClient.subscribe('/user/queue/messages', function(message) {
+                log('RECEIVED >>> ' + message.body);
+            });
+        }, function(error) {
+            document.getElementById('status').textContent = 'Error';
+            log('Connection error: ' + error);
+        });
+    };
+
+    document.getElementById('sendBtn').onclick = function() {
+        const receiverId = parseInt(document.getElementById('receiverId').value);
+        const content = document.getElementById('content').value;
+
+        const payload = JSON.stringify({ content: content, receiverId: receiverId });
+        stompClient.send('/app/chat.send', {}, payload);
+        log('Sent: ' + payload);
+    };
+</script>
+</body>
+</html>
