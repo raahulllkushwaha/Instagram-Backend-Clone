@@ -38,7 +38,7 @@ public class NotificationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Notification not found with id: " + notificationId));
 
         if(!notification.getRecipient().getUsername().equals(currentUsername)){
-            throw new RuntimeException("ou are not allowed to update this notification");
+            throw new RuntimeException("You are not allowed to update this notification");
         }
 
         notification.setRead(true);
