@@ -11,17 +11,6 @@ services:
     volumes:
       - instaclone_data:/var/lib/postgresql/data
 
-  neo4j:
-    image: neo4j:5
-    container_name: instaclone_neo4j
-    environment:
-      NEO4J_AUTH: neo4j/anonymous9039
-    ports:
-      - "7474:7474"
-      - "7687:7687"
-    volumes:
-      - neo4j_data:/data
-
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.0
     container_name: instaclone_zookeeper
@@ -39,11 +28,30 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2182
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9093
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     ports:
       - "9093:9093"
 
+  app:
+    build: .
+    container_name: instaclone_app
+    depends_on:
+      - postgres
+      - kafka
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: rahul5264
+      NEO4J_HOST: host.docker.internal
+      KAFKA_HOST: kafka
+      JWT_SECRET: ${JWT_SECRET}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+    ports:
+      - "8081:8081"
+
 volumes:
   instaclone_data:
-  neo4j_data:
